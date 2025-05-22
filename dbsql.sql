@@ -141,6 +141,56 @@ ENGINE = InnoDB;
 
 
 
+
+
+
+-- Crear una nueva tabla específica para ofertas de trabajo
+CREATE TABLE IF NOT EXISTS `mydb`.`ofertas_trabajo` (
+  `idoferta` INT NOT NULL AUTO_INCREMENT,
+  `idempresa` INT NOT NULL,
+  `puesto` VARCHAR(100) NOT NULL,
+  `lugar` VARCHAR(100) NOT NULL,
+  `requerimiento` TEXT NOT NULL,
+  `contrato` VARCHAR(50) NOT NULL,
+  `hora_laborales` VARCHAR(50) NOT NULL,
+  `salario` FLOAT NOT NULL,
+  `descripcion` TEXT NOT NULL,
+  `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `activa` BOOLEAN DEFAULT TRUE,
+  PRIMARY KEY (`idoferta`),
+  CONSTRAINT `fk_ofertas_empresa`
+    FOREIGN KEY (`idempresa`)
+    REFERENCES `mydb`.`empresa` (`idempresa`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+
+
+
+-- Opcional: Crear tabla para relacionar aplicaciones de usuarios a ofertas
+CREATE TABLE IF NOT EXISTS `mydb`.`aplicaciones` (
+  `idaplicacion` INT NOT NULL AUTO_INCREMENT,
+  `idoferta` INT NOT NULL,
+  `idusuario` INT NOT NULL,
+  `fecha_aplicacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `estado` ENUM('pendiente', 'revisando', 'aceptada', 'rechazada') DEFAULT 'pendiente',
+  PRIMARY KEY (`idaplicacion`),
+  UNIQUE KEY `unique_aplicacion` (`idoferta`, `idusuario`),
+  CONSTRAINT `fk_aplicaciones_oferta`
+    FOREIGN KEY (`idoferta`)
+    REFERENCES `mydb`.`ofertas_trabajo` (`idoferta`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_aplicaciones_usuario`
+    FOREIGN KEY (`idusuario`)
+    REFERENCES `mydb`.`Usuario` (`idusuario`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+) ENGINE = InnoDB;
+
+
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
